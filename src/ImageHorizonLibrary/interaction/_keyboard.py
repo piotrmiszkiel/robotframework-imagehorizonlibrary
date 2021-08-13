@@ -18,7 +18,7 @@ class _Keyboard(object):
         '''
         self._press(*keys)
 
-    def type(self, *keys_or_text):
+    def type(self, *params):
         '''Type text and keyboard keys.
 
         See valid keyboard keys in `Press Combination`.
@@ -29,13 +29,19 @@ class _Keyboard(object):
         | Type | Submit this with enter | Key.enter |              |
         | Type | key.windows            | notepad   | Key.enter    |
         '''
+        try:
+            interval = float(params[-1])
+            keys_or_text = params[:-1]
+        except:
+            interval = 0
+            keys_or_text = params
+
         for key_or_text in keys_or_text:
             key = self._convert_to_valid_special_key(key_or_text)
             if key:
                 ag.press(key)
             else:
-                ag.typewrite(key_or_text)
-
+                ag.typewrite(key_or_text, interval)
 
     def type_with_keys_down(self, text, *keys):
         '''Press keyboard keys down, then write given text, then release the

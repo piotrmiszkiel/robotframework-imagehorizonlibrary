@@ -61,7 +61,6 @@ class _Mouse(object):
         '''
         self._click_to_the_direction_of('right', location, offset,
                                         clicks, button, interval)
-
     def move_to(self, *coordinates):
         '''Moves the mouse pointer to an absolute coordinates.
 
@@ -78,12 +77,14 @@ class _Mouse(object):
         X grows from left to right and Y grows from top to bottom, which means
         that top left corner of the screen is (0, 0)
         '''
-        if len(coordinates) > 2 or (len(coordinates) == 1 and
+        if len(coordinates) > 3 or (len(coordinates) == 1 and
                                     type(coordinates[0]) not in (list, tuple)):
             raise MouseException('Invalid number of coordinates. Please give '
                                  'either (x, y) or x, y.')
         if len(coordinates) == 2:
             coordinates = (coordinates[0], coordinates[1])
+        elif len(coordinates) == 3:
+            coordinates = (coordinates[0], coordinates[1], coordinates[2])
         else:
             coordinates = coordinates[0]
         try:
@@ -92,6 +93,27 @@ class _Mouse(object):
             raise MouseException('Coordinates %s are not integers' %
                                  (coordinates,))
         ag.moveTo(*coordinates)
+
+    def mouse_scroll(self, *params):
+        clicks = params[0]
+        try:
+            clicks = int(clicks)
+        except ValueError:
+            raise MouseException('Clicks %s is not integer' %
+                             (clicks,))
+        if len(params) == 2:
+            duration = params[1]
+            try:
+                duration = float(duration)
+            except ValueError:
+                raise MouseException('Duration %s is not float' %
+                                 (duration,))
+
+            for click in range(abs(clicks)):
+                ag.scroll(clicks / abs(clicks))
+                time.sleep(duration / float(abs(clicks)))
+        else:
+            ag.scroll(clicks)
 
     def mouse_down(self, button='left'):
         '''Presses specidied mouse button down'''
